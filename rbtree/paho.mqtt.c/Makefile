@@ -9,6 +9,7 @@ HEADER = $(wildcard ./*.h)
 
 Target = rbtree_test.out
 
+.PHONY: all
 all: $(Target)
 
 DEPS := $(OBJS:.o=.d)
@@ -25,6 +26,6 @@ CXXFLAGS += -MMD -MP
 $(Target):$(OBJS)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
-.PHONY:clean
+.PHONY: clean
 clean:
 	rm -rf *.o *.out $(Target) $(DEPS)

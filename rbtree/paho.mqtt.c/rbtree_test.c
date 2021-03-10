@@ -3,6 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+
+#define TEST_CAP 32768
+#define random(x) (rand()%(x))
 
 void traverse(Tree *t)
 {
@@ -20,47 +24,42 @@ void traverse(Tree *t)
     printf("End traverse\n");
 }
 
-int main(int argc, const char * argv[])
+int test_rand()
 {
-    int rc = 0;
-    int *ip = NULL;
     int i = 0;
-    Node *node_l = NULL;
+    srand(time(NULL));
+    void* random_poll = malloc(sizeof(int) * TEST_CAP);
+    for (i = 0; i < TEST_CAP; i++) {
+        *((int *)random_poll + i) = random(TEST_CAP);
+    }
+
     Tree* t = TreeInit(TreeIntCompare);
-
-    ip = malloc(sizeof(int));
-    *ip = 2;
-    TreeAdd(t, (void*) ip, sizeof(int));
-
-    ip = malloc(sizeof(int));
-    *ip = 4;
-    TreeAdd(t, (void*) ip, sizeof(int));
-
-    ip = malloc(sizeof(int));
-    *ip = 3;
-    TreeAdd(t, (void*) ip, sizeof(int));
-
-    ip = malloc(sizeof(int));
-    *ip = 1;
-    TreeAdd(t, (void*) ip, sizeof(int));
-
-    i = 3;
-    node_l = TreeFind(t, &i);
-    if (node_l) {
-        printf("Find node %d\n", *(int *)node_l->content);
+    for (i = 0; i < TEST_CAP; i++) {
+        TreeAdd(t, (void *)((int *)random_poll + i), sizeof(int));
+        // printf("Add %d\n", *((int *)random_poll + i));
     }
 
-    traverse(t);
+    printf("After add tree size %zu\n", t->size / sizeof(int));
 
-    for (i = 4; i > 0; i--) {
-        ip = TreeRemove(t, &i);
-        if (ip) {
-            free(ip);
-        }
+    for (i = 0; i < TEST_CAP; i++) {
+        (void)TreeRemove(t, (void *)((int *)random_poll + i));
+        // printf("Remove %d\n", *((int *)random_poll + i));
     }
+
+    printf("After remove tree size %zu\n", t->size / sizeof(int));
 
     TreeFree(t);
 
-    return rc;
+    return 0;
+}
 
+int main(int argc, const char * argv[])
+{
+    int rc = 0;
+    rc = test_rand();
+    if (rc != 0) {
+        return rc;
+    }
+
+    return rc;
 }
