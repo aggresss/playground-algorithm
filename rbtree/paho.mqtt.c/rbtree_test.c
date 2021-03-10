@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define TEST_CAP 32768
+#define TEST_CAP 65536
 #define random(x) (rand()%(x))
 
 void traverse(Tree *t)
@@ -49,6 +49,7 @@ int test_rand()
     printf("After remove tree size %zu\n", t->size / sizeof(int));
 
     TreeFree(t);
+    free(random_poll);
 
     return 0;
 }
