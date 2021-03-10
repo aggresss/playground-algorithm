@@ -41,6 +41,9 @@ int test_rand()
 
     printf("After add tree size %zu\n", t->size / sizeof(int));
 
+    printf("After add tree depth %d\n", TreeDepth(t));
+
+
     for (i = 0; i < TEST_CAP; i++) {
         (void)TreeRemove(t, (void *)((int *)random_poll + i));
         // printf("Remove %d\n", *((int *)random_poll + i));
