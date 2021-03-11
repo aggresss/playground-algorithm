@@ -193,7 +193,7 @@ static void* TreeRemoveNode(Tree* aTree, Node* curnode)
         if (curchild == NULL) {
             if (redundant->parent) {
                 Node temp;
-                memset(&temp, '\0', sizeof(Node));
+                memset(&temp, 0x00, sizeof(Node));
                 temp.parent = redundant->parent;
                 temp.red = 0;
                 TreeBalanceAfterRemove(aTree, &temp);
@@ -214,7 +214,7 @@ static void* TreeRemoveNode(Tree* aTree, Node* curnode)
 Tree* TreeInit(int (*compare)(void*, void*))
 {
     Tree* newt = malloc(sizeof(Tree));
-    memset(newt, '\0', sizeof(Tree));
+    memset(newt, 0x00, sizeof(Tree));
     newt->compare = compare;
     return newt;
 }
@@ -277,7 +277,7 @@ Node* TreeAdd(Tree* aTree, void* content, size_t size)
         goto exit;
     } else {
         newel = malloc(sizeof(Node));
-        memset(newel, '\0', sizeof(Node));
+        memset(newel, 0x00, sizeof(Node));
         if (curparent) {
             curparent->child[which] = newel;
         } else {
