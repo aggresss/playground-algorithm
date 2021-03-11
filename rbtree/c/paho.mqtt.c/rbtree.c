@@ -253,30 +253,6 @@ Node* TreeNextElement(Tree* aTree, Node* curnode)
     return curnode;
 }
 
-int TreeDepth(Tree* aTree) {
-    int depth = 0;
-    Node* curnode = TreeNextElement(aTree, NULL);
-    while (curnode != NULL) {
-        int curdepth = 0;
-        Node* findnode = aTree->root;
-        while (findnode) {
-            curdepth++;
-            int result = 0;
-            result = aTree->compare(findnode->content, curnode->content);
-            if (result == 0) {
-                if (curdepth > depth) {
-                    depth = curdepth;
-                }
-                break;
-            } else {
-            findnode = findnode->child[result > 0];
-            }
-        }
-        curnode = TreeNextElement(aTree, curnode);
-    }
-    return depth;
-}
-
 Node* TreeAdd(Tree* aTree, void* content, size_t size)
 {
     Node* curparent = NULL;

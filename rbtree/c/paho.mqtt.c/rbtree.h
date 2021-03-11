@@ -40,7 +40,5 @@ int TreeIntCompare(void* a, void* b);
 int TreePtrCompare(void* a, void* b);
 int TreeStringCompare(void* a, void* b);
 
-int TreeDepth(Tree* aTree);
-
 #endif  /* TREE_H */
 
