@@ -81,7 +81,7 @@ static Node* TreeSuccessor(Node* curnode)
 
 static void TreeBalanceAfterAdd(Tree* aTree, Node* curnode)
 {
-    while (curnode && curnode->parent && isRed(curnode->parent) && curnode->parent->parent) {
+    while (curnode && isRed(curnode->parent) && curnode->parent->parent) {
         if (curnode->parent == curnode->parent->parent->child[LEFT]) {
             curnode = TreeBAASub(aTree, curnode, RIGHT);
         } else {
