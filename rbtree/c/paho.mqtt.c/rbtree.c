@@ -80,12 +80,10 @@ static Node* TreeSuccessor(Node* curnode)
     if (curnode->child[RIGHT]) {
         curnode = TreeMinimum(curnode->child[RIGHT]);
     } else {
-        Node* curparent = curnode->parent;
-        while (curparent && curnode == curparent->child[RIGHT]) {
-            curnode = curparent;
-            curparent = curparent->parent;
+        while (curnode->parent && curnode == curnode->parent->child[RIGHT]) {
+            curnode = curnode->parent;
         }
-        curnode = curparent;
+        curnode = curnode->parent;
     }
 
     return curnode;
@@ -96,12 +94,10 @@ static Node* TreePredecessor(Node* curnode)
     if (curnode->child[LEFT]) {
         curnode = TreeMaximum(curnode->child[LEFT]);
     } else {
-        Node* curparent = curnode->parent;
-        while (curparent && curnode == curnode->child[LEFT]) {
-            curnode = curparent;
-            curparent = curparent->parent;
+        while (curnode->parent && curnode == curnode->parent->child[LEFT]) {
+            curnode = curnode->parent;
         }
-        curnode = curparent;
+        curnode = curnode->parent;
     }
 
     return curnode;
