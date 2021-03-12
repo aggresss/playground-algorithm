@@ -64,6 +64,17 @@ static Node* TreeMinimum(Node* curnode)
     return curnode;
 }
 
+static Node* TreeMaximum(Node* curnode)
+{
+    if (curnode) {
+        while (curnode->child[RIGHT]) {
+            curnode = curnode->child[RIGHT];
+        }
+    }
+
+    return curnode;
+}
+
 static Node* TreeSuccessor(Node* curnode)
 {
     if (curnode->child[RIGHT]) {
@@ -76,6 +87,23 @@ static Node* TreeSuccessor(Node* curnode)
         }
         curnode = curparent;
     }
+
+    return curnode;
+}
+
+static Node* TreePredecessor(Node* curnode)
+{
+    if (curnode->child[LEFT]) {
+        curnode = TreeMaximum(curnode->child[LEFT]);
+    } else {
+        Node* curparent = curnode->parent;
+        while (curparent && curnode == curnode->child[LEFT]) {
+            curnode = curparent;
+            curparent = curparent->parent;
+        }
+        curnode = curparent;
+    }
+
     return curnode;
 }
 
@@ -242,12 +270,23 @@ Node* TreeFind(Tree* aTree, void* content)
     return curnode;
 }
 
-Node* TreeNextElement(Tree* aTree, Node* curnode)
+Node* TreeNext(Tree* aTree, Node* curnode)
 {
     if (curnode == NULL) {
         curnode = TreeMinimum(aTree->root);
     } else {
         curnode = TreeSuccessor(curnode);
+    }
+
+    return curnode;
+}
+
+Node* TreePrev(Tree* aTree, Node* curnode)
+{
+    if (curnode == NULL) {
+        curnode = TreeMaximum(aTree->root);
+    } else {
+        curnode = TreePredecessor(curnode);
     }
 
     return curnode;

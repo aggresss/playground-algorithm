@@ -30,7 +30,9 @@ void TreeFree(Tree* aTree);
 
 Node* TreeFind(Tree* aTree, void* content);
 
-Node* TreeNextElement(Tree* aTree, Node* curnode);
+Node* TreeNext(Tree* aTree, Node* curnode);
+
+Node* TreePrev(Tree* aTree, Node* curnode);
 
 Node* TreeAdd(Tree* aTree, void* content, size_t size);
 

@@ -13,10 +13,10 @@ void traverse(Tree *t)
     Node* curnode = NULL;
 
     printf("Traversing\n");
-    curnode = TreeNextElement(t, curnode);
+    curnode = TreeNext(t, curnode);
     printf("\tcontent int %d\n", *(int*)(curnode->content));
     while (curnode) {
-        curnode = TreeNextElement(t, curnode);
+        curnode = TreeNext(t, curnode);
         if (curnode) {
             printf("\tcontent int %d\n", *(int*)(curnode->content));
         }
@@ -26,7 +26,7 @@ void traverse(Tree *t)
 
 int TreeDepth(Tree* aTree) {
     int depth = 0;
-    Node* curnode = TreeNextElement(aTree, NULL);
+    Node* curnode = TreeNext(aTree, NULL);
     while (curnode != NULL) {
         int curdepth = 0;
         Node* findnode = aTree->root;
@@ -43,7 +43,7 @@ int TreeDepth(Tree* aTree) {
             findnode = findnode->child[result > 0];
             }
         }
-        curnode = TreeNextElement(aTree, curnode);
+        curnode = TreeNext(aTree, curnode);
     }
     return depth;
 }
