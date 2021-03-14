@@ -16,6 +16,8 @@ static int isBlack(Node* aNode);
 
 static void TreeRotate(Tree* aTree, Node* curnode, int direction);
 static Node* TreeMinimum(Node* curnode);
+static Node* TreeMaximum(Node* curnode);
+static Node* TreePredecessor(Node* curnode);
 static Node* TreeSuccessor(Node* curnode);
 static void TreeBalanceAfterAdd(Tree* aTree, Node* curnode);
 static Node* TreeBAASub(Tree* aTree, Node* curnode, int which);
