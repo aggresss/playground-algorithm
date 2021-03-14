@@ -7,6 +7,7 @@
 #include <math.h>
 
 #define TEST_CAP 1024
+
 #define random(x) (rand()%(x))
 
 static inline int isRed(Node* aNode)
