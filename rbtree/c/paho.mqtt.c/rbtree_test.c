@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <math.h>
 
 #define TEST_CAP 1024
 
@@ -68,6 +67,7 @@ int TreeDepth(Tree* aTree)
 
 int TreeCheck(Tree* aTree)
 {
+    // check root black
     if (!isBlack(aTree->root)) {
         return ERR_ROOT_NOT_BLACK;
     }
@@ -83,7 +83,7 @@ int TreeCheck(Tree* aTree)
         }
         // check curnode leaf path black
         int path_black_cache = 0;
-        for (i = 0; i < (int)pow(2, tree_depth - 1); i++) {
+        for (i = 0; i < (1 << (tree_depth - 1)); i++) {
             Node* temp_node = curnode;
             int path_black_temp = 0;
             for (j = 0; j < tree_depth; j++) {
@@ -93,7 +93,7 @@ int TreeCheck(Tree* aTree)
                 if (isBlack(temp_node)) {
                     path_black_temp++;
                 }
-                temp_node = temp_node->child[(i & (int)pow(2, j)) > 0];
+                temp_node = temp_node->child[(i & (1 << j)) > 0];
             }
             if (path_black_cache == 0) {
                 path_black_cache = path_black_temp;
