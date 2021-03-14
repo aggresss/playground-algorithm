@@ -123,7 +123,7 @@ int test_rand()
         printf("Add %d: %d\n", i, *((int *)random_poll + i));
         check_result = TreeCheck(t);
         if (check_result != 0) {
-            printf("Tree check error: %d", check_result);
+            printf("Tree check error: %d\n", check_result);
             return -1;
         }
     }
@@ -137,7 +137,7 @@ int test_rand()
         printf("Remove %d: %d\n", i, *((int *)random_poll + i));
         check_result = TreeCheck(t);
         if (check_result != 0) {
-            printf("Tree check error: %d", check_result);
+            printf("Tree check error: %d\n", check_result);
             return -1;
         }
     }
@@ -155,7 +155,7 @@ int main(int argc, const char * argv[])
     int rc = 0;
     rc = test_rand();
     if (rc != 0) {
-        printf("test_rand faild return: %d", rc);
+        printf("test_rand faild return: %d\n", rc);
         return rc;
     }
 
