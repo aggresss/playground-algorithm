@@ -21,7 +21,6 @@ typedef struct ngx_rbtree_node_s {
     struct ngx_rbtree_node_s     *right;
     struct ngx_rbtree_node_s     *parent;
     u_char                 color;
-    u_char                 data;
 } ngx_rbtree_node_t;
 
 

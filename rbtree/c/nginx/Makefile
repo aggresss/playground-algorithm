@@ -7,7 +7,7 @@ OBJS = $(patsubst %c, %o, $(wildcard *.c))
 OBJS += $(patsubst %cpp, %o, $(wildcard *.cpp))
 HEADER = $(wildcard *.h)
 
-Target = $(patsubst %c, %out, $(wildcard *_test.c))
+Target = $(strip $(patsubst %c, %out, $(wildcard *_test.c)))
 
 .PHONY: all
 all: $(Target)
