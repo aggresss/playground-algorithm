@@ -26,6 +26,10 @@ CXXFLAGS += -MMD -MP
 $(Target):$(OBJS)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
+.PHONY: test
+test: ${Target}
+	./${Target}
+
 .PHONY: clean
 clean:
 	rm -rf *.o *.out $(Target) $(DEPS)

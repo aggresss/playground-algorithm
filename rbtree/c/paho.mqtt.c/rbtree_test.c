@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define TEST_CAP 1024
+#define TEST_CAP 256
 
 #define random(x) (rand()%(x))
 
@@ -112,15 +112,22 @@ int test_rand()
     int check_result = 0;
     int i = 0;
     srand(time(NULL));
-    void* random_poll = malloc(sizeof(int) * TEST_CAP);
+    int* random_poll = malloc(sizeof(int) * TEST_CAP);
     for (i = 0; i < TEST_CAP; i++) {
-        *((int *)random_poll + i) = random(TEST_CAP);
+        random_poll[i] = i;
+    }
+    for (i = 0; i < TEST_CAP / 2; i++) {
+        int pos1 = random(TEST_CAP);
+        int pos2 = random(TEST_CAP);
+        if (pos1 != pos2) {
+            random_poll[pos1] ^= random_poll[pos2] ^= random_poll[pos1] ^= random_poll[pos2];
+        }
     }
 
     Tree* t = TreeInit(TreeIntCompare);
     for (i = 0; i < TEST_CAP; i++) {
-        TreeAdd(t, (void *)((int *)random_poll + i), sizeof(int));
-        printf("Add %d: %d\n", i, *((int *)random_poll + i));
+        TreeAdd(t, &random_poll[i], sizeof(int));
+        printf("Add %d: %d\n", i, random_poll[i]);
         check_result = TreeCheck(t);
         if (check_result != 0) {
             printf("Tree check error: %d\n", check_result);
@@ -133,8 +140,8 @@ int test_rand()
     printf("After add tree depth %d\n", TreeDepth(t));
 
     for (i = 0; i < TEST_CAP; i++) {
-        (void)TreeRemove(t, (void *)((int *)random_poll + i));
-        printf("Remove %d: %d\n", i, *((int *)random_poll + i));
+        (void)TreeRemove(t, &random_poll[i]);
+        printf("Remove %d: %d\n", i, random_poll[i]);
         check_result = TreeCheck(t);
         if (check_result != 0) {
             printf("Tree check error: %d\n", check_result);
