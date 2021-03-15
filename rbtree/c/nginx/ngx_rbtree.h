@@ -8,25 +8,21 @@
 #ifndef _NGX_RBTREE_H_INCLUDED_
 #define _NGX_RBTREE_H_INCLUDED_
 
+#include <stdlib.h>
+#include <stdint.h>
 
-#include <ngx_config.h>
-#include <ngx_core.h>
+typedef unsigned char u_char;
+typedef uintptr_t  ngx_rbtree_key_t;
+typedef intptr_t   ngx_rbtree_key_int_t;
 
-
-typedef ngx_uint_t  ngx_rbtree_key_t;
-typedef ngx_int_t   ngx_rbtree_key_int_t;
-
-
-typedef struct ngx_rbtree_node_s  ngx_rbtree_node_t;
-
-struct ngx_rbtree_node_s {
+typedef struct ngx_rbtree_node_s {
     ngx_rbtree_key_t       key;
-    ngx_rbtree_node_t     *left;
-    ngx_rbtree_node_t     *right;
-    ngx_rbtree_node_t     *parent;
+    struct ngx_rbtree_node_s     *left;
+    struct ngx_rbtree_node_s     *right;
+    struct ngx_rbtree_node_s     *parent;
     u_char                 color;
     u_char                 data;
-};
+} ngx_rbtree_node_t;
 
 
 typedef struct ngx_rbtree_s  ngx_rbtree_t;
@@ -70,7 +66,7 @@ ngx_rbtree_node_t *ngx_rbtree_next(ngx_rbtree_t *tree,
 #define ngx_rbtree_sentinel_init(node)  ngx_rbt_black(node)
 
 
-static ngx_inline ngx_rbtree_node_t *
+static inline ngx_rbtree_node_t *
 ngx_rbtree_min(ngx_rbtree_node_t *node, ngx_rbtree_node_t *sentinel)
 {
     while (node->left != sentinel) {

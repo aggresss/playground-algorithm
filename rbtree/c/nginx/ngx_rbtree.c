@@ -5,9 +5,7 @@
  */
 
 
-#include <ngx_config.h>
-#include <ngx_core.h>
-
+#include "ngx_rbtree.h"
 
 /*
  * The red-black tree code is based on the algorithm described in
@@ -15,9 +13,9 @@
  */
 
 
-static ngx_inline void ngx_rbtree_left_rotate(ngx_rbtree_node_t **root,
+static inline void ngx_rbtree_left_rotate(ngx_rbtree_node_t **root,
     ngx_rbtree_node_t *sentinel, ngx_rbtree_node_t *node);
-static ngx_inline void ngx_rbtree_right_rotate(ngx_rbtree_node_t **root,
+static inline void ngx_rbtree_right_rotate(ngx_rbtree_node_t **root,
     ngx_rbtree_node_t *sentinel, ngx_rbtree_node_t *node);
 
 
@@ -156,7 +154,7 @@ ngx_rbtree_insert_timer_value(ngx_rbtree_node_t *temp, ngx_rbtree_node_t *node,
 void
 ngx_rbtree_delete(ngx_rbtree_t *tree, ngx_rbtree_node_t *node)
 {
-    ngx_uint_t           red;
+    uintptr_t           red;
     ngx_rbtree_node_t  **root, *sentinel, *subst, *temp, *w;
 
     /* a binary tree delete */
@@ -315,7 +313,7 @@ ngx_rbtree_delete(ngx_rbtree_t *tree, ngx_rbtree_node_t *node)
 }
 
 
-static ngx_inline void
+static inline void
 ngx_rbtree_left_rotate(ngx_rbtree_node_t **root, ngx_rbtree_node_t *sentinel,
     ngx_rbtree_node_t *node)
 {
@@ -345,7 +343,7 @@ ngx_rbtree_left_rotate(ngx_rbtree_node_t **root, ngx_rbtree_node_t *sentinel,
 }
 
 
-static ngx_inline void
+static inline void
 ngx_rbtree_right_rotate(ngx_rbtree_node_t **root, ngx_rbtree_node_t *sentinel,
     ngx_rbtree_node_t *node)
 {
