@@ -109,6 +109,7 @@ int TreeCheck(Tree* aTree)
 
 int test_rand()
 {
+    // Setup
     int check_result = 0;
     int i = 0;
     srand(time(NULL));
@@ -123,8 +124,9 @@ int test_rand()
             random_poll[pos1] ^= random_poll[pos2] ^= random_poll[pos1] ^= random_poll[pos2];
         }
     }
-
     Tree* t = TreeInit(TreeIntCompare);
+
+    // Test add
     for (i = 0; i < TEST_CAP; i++) {
         TreeAdd(t, &random_poll[i], sizeof(int));
         printf("Add %d: %d\n", i, random_poll[i]);
@@ -134,11 +136,28 @@ int test_rand()
             return -1;
         }
     }
-
     printf("After add tree size %zu\n", t->size / sizeof(int));
-
     printf("After add tree depth %d\n", TreeDepth(t));
 
+    // Test next and prev
+    Node* curnode = NULL;
+    for (i = 0; i < TEST_CAP; i++) {
+        curnode = TreeNext(t, curnode);
+        if (*(int *)(curnode->content) != i) {
+            printf("Tree next error: %d\n", i);
+            return -1;
+        }
+    }
+    curnode = NULL;
+    for (i = 0; i < TEST_CAP; i++) {
+        curnode = TreePrev(t, curnode);
+        if (*(int *)(curnode->content) != TEST_CAP -1 - i) {
+            printf("Tree prev error: %d\n", i);
+            return -1;
+        }
+    }
+
+    // Test remove
     for (i = 0; i < TEST_CAP; i++) {
         (void)TreeRemove(t, &random_poll[i]);
         printf("Remove %d: %d\n", i, random_poll[i]);
@@ -148,9 +167,9 @@ int test_rand()
             return -1;
         }
     }
-
     printf("After remove tree size %zu\n", t->size / sizeof(int));
 
+    // Teardown
     TreeFree(t);
     free(random_poll);
 
