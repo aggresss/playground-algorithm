@@ -149,9 +149,9 @@ int test_rand()
         }
     }
     curnode = NULL;
-    for (i = 0; i < TEST_CAP; i++) {
+    for (i = TEST_CAP -1 ; i >= 0; i--) {
         curnode = TreePrev(t, curnode);
-        if (*(int *)(curnode->content) != TEST_CAP -1 - i) {
+        if (*(int *)(curnode->content) != i) {
             printf("Tree prev error: %d\n", i);
             return -1;
         }
