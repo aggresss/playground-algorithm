@@ -49,6 +49,7 @@ int test_rand()
     // Test next
     ngx_blob_t *current = (ngx_blob_t *)((char *)ngx_rbtree_min(rbtree.root, &sentinel) - offsetof(ngx_blob_t, node));
     assert(current->value == 0);
+    printf("%"PRIuPTR"\n", current->value);
 
     for(i = 1; i < TEST_CAP; i++) {
         current = (ngx_blob_t *)((char *)ngx_rbtree_next(&rbtree, &current->node) - offsetof(ngx_blob_t, node));
