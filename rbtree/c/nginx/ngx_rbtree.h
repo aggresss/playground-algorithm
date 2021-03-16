@@ -15,25 +15,24 @@ typedef unsigned char u_char;
 typedef uintptr_t  ngx_rbtree_key_t;
 typedef intptr_t   ngx_rbtree_key_int_t;
 
+
 typedef struct ngx_rbtree_node_s {
-    ngx_rbtree_key_t       key;
+    ngx_rbtree_key_t              key;
     struct ngx_rbtree_node_s     *left;
     struct ngx_rbtree_node_s     *right;
     struct ngx_rbtree_node_s     *parent;
-    u_char                 color;
+    u_char                        color;
+    u_char                        data;
 } ngx_rbtree_node_t;
-
-
-typedef struct ngx_rbtree_s  ngx_rbtree_t;
 
 typedef void (*ngx_rbtree_insert_pt) (ngx_rbtree_node_t *root,
     ngx_rbtree_node_t *node, ngx_rbtree_node_t *sentinel);
 
-struct ngx_rbtree_s {
+typedef struct ngx_rbtree_s {
     ngx_rbtree_node_t     *root;
     ngx_rbtree_node_t     *sentinel;
     ngx_rbtree_insert_pt   insert;
-};
+} ngx_rbtree_t;
 
 
 #define ngx_rbtree_init(tree, s, i)                                           \
