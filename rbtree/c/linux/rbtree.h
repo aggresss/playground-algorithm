@@ -2,7 +2,7 @@
 /*
   Red Black Trees
   (C) 1999  Andrea Arcangeli <andrea@suse.de>
-  
+
 
   linux/include/linux/rbtree.h
 
@@ -17,16 +17,48 @@
 #ifndef	_LINUX_RBTREE_H
 #define	_LINUX_RBTREE_H
 
-#include <linux/kernel.h>
-#include <linux/stddef.h>
-#include <linux/rcupdate.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#ifndef container_of
+#define container_of(ptr, type, member) ({          \
+	const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
+	(type *)( (char *)__mptr - offsetof(type,member) );})
+#endif
+
+#ifndef WRITE_ONCE
+#define WRITE_ONCE(x, val)                      \
+do {                                    \
+	*(volatile typeof(x) *)&(x) = (val);                \
+} while (0)
+#endif
+
+#ifndef READ_ONCE
+#define READ_ONCE(x) (x)
+#endif
+
+#ifndef __always_inline
+#define __always_inline inline
+#endif
+
+#ifndef EXPORT_SYMBOL
+#define EXPORT_SYMBOL(sym)
+#endif
+
+#ifndef likely
+#define likely(x) (x)
+#endif
+
+#ifndef unlikely
+#define unlikely(x) (x)
+#endif
 
 struct rb_node {
 	unsigned long  __rb_parent_color;
 	struct rb_node *rb_right;
 	struct rb_node *rb_left;
 } __attribute__((aligned(sizeof(long))));
-    /* The alignment might seem pointless, but allegedly CRIS needs it */
+	/* The alignment might seem pointless, but allegedly CRIS needs it */
 
 struct rb_root {
 	struct rb_node *rb_node;
@@ -62,9 +94,9 @@ extern struct rb_node *rb_next_postorder(const struct rb_node *);
 
 /* Fast replacement of a single node without remove/rebalance/add/rebalance */
 extern void rb_replace_node(struct rb_node *victim, struct rb_node *new,
-			    struct rb_root *root);
-extern void rb_replace_node_rcu(struct rb_node *victim, struct rb_node *new,
 				struct rb_root *root);
+// extern void rb_replace_node_rcu(struct rb_node *victim, struct rb_node *new,
+// 				struct rb_root *root);
 
 static inline void rb_link_node(struct rb_node *node, struct rb_node *parent,
 				struct rb_node **rb_link)
@@ -75,14 +107,14 @@ static inline void rb_link_node(struct rb_node *node, struct rb_node *parent,
 	*rb_link = node;
 }
 
-static inline void rb_link_node_rcu(struct rb_node *node, struct rb_node *parent,
-				    struct rb_node **rb_link)
-{
-	node->__rb_parent_color = (unsigned long)parent;
-	node->rb_left = node->rb_right = NULL;
+// static inline void rb_link_node_rcu(struct rb_node *node, struct rb_node *parent,
+// 				    struct rb_node **rb_link)
+// {
+// 	node->__rb_parent_color = (unsigned long)parent;
+// 	node->rb_left = node->rb_right = NULL;
 
-	rcu_assign_pointer(*rb_link, node);
-}
+// 	rcu_assign_pointer(*rb_link, node);
+// }
 
 #define rb_entry_safe(ptr, type, member) \
 	({ typeof(ptr) ____ptr = (ptr); \
@@ -108,9 +140,9 @@ static inline void rb_link_node_rcu(struct rb_node *node, struct rb_node *parent
  */
 #define rbtree_postorder_for_each_entry_safe(pos, n, root, field) \
 	for (pos = rb_entry_safe(rb_first_postorder(root), typeof(*pos), field); \
-	     pos && ({ n = rb_entry_safe(rb_next_postorder(&pos->field), \
+		 pos && ({ n = rb_entry_safe(rb_next_postorder(&pos->field), \
 			typeof(*pos), field); 1; }); \
-	     pos = n)
+		 pos = n)
 
 /*
  * Leftmost-cached rbtrees.
@@ -190,7 +222,7 @@ static inline void rb_replace_node_cached(struct rb_node *victim,
  */
 static __always_inline struct rb_node *
 rb_add_cached(struct rb_node *node, struct rb_root_cached *tree,
-	      bool (*less)(struct rb_node *, const struct rb_node *))
+		  bool (*less)(struct rb_node *, const struct rb_node *))
 {
 	struct rb_node **link = &tree->rb_root.rb_node;
 	struct rb_node *parent = NULL;
@@ -220,7 +252,7 @@ rb_add_cached(struct rb_node *node, struct rb_root_cached *tree,
  */
 static __always_inline void
 rb_add(struct rb_node *node, struct rb_root *tree,
-       bool (*less)(struct rb_node *, const struct rb_node *))
+	   bool (*less)(struct rb_node *, const struct rb_node *))
 {
 	struct rb_node **link = &tree->rb_node;
 	struct rb_node *parent = NULL;
@@ -248,7 +280,7 @@ rb_add(struct rb_node *node, struct rb_root *tree,
  */
 static __always_inline struct rb_node *
 rb_find_add(struct rb_node *node, struct rb_root *tree,
-	    int (*cmp)(struct rb_node *, const struct rb_node *))
+		int (*cmp)(struct rb_node *, const struct rb_node *))
 {
 	struct rb_node **link = &tree->rb_node;
 	struct rb_node *parent = NULL;
@@ -309,7 +341,7 @@ rb_find(const void *key, const struct rb_root *tree,
  */
 static __always_inline struct rb_node *
 rb_find_first(const void *key, const struct rb_root *tree,
-	      int (*cmp)(const void *key, const struct rb_node *))
+		  int (*cmp)(const void *key, const struct rb_node *))
 {
 	struct rb_node *node = tree->rb_node;
 	struct rb_node *match = NULL;
@@ -339,7 +371,7 @@ rb_find_first(const void *key, const struct rb_root *tree,
  */
 static __always_inline struct rb_node *
 rb_next_match(const void *key, struct rb_node *node,
-	      int (*cmp)(const void *key, const struct rb_node *))
+		  int (*cmp)(const void *key, const struct rb_node *))
 {
 	node = rb_next(node);
 	if (node && cmp(key, node))
@@ -356,6 +388,6 @@ rb_next_match(const void *key, struct rb_node *node,
  */
 #define rb_for_each(node, key, tree, cmp) \
 	for ((node) = rb_find_first((key), (tree), (cmp)); \
-	     (node); (node) = rb_next_match((key), (node), (cmp)))
+		 (node); (node) = rb_next_match((key), (node), (cmp)))
 
 #endif	/* _LINUX_RBTREE_H */
