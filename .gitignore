@@ -1,5 +1,5 @@
 # .gitignore
-
+core
 *.out
 *.o
 *.d
