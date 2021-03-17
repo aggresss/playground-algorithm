@@ -24,6 +24,7 @@ int test_rand()
     ngx_rbtree_t rbtree;
     ngx_rbtree_node_t sentinel = {0, NULL, NULL, NULL, 0};
     ngx_rbtree_init(&rbtree, &sentinel, ngx_rbtree_insert_value);
+    srand(time(NULL));
 
     ngx_blob_t *blob_pool = malloc(sizeof(ngx_blob_t) * TEST_CAP);
     memset(blob_pool, 0x00, sizeof(ngx_blob_t) * TEST_CAP);

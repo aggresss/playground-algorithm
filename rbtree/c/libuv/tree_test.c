@@ -31,6 +31,7 @@ int test_rand()
     int i = 0;
     blob_t *blob_pool = malloc(sizeof(blob_t) * TEST_CAP);
     memset(blob_pool, 0x00, sizeof(blob_t) * TEST_CAP);
+    srand(time(NULL));
 
     struct blob_tree_s tree = RB_INITIALIZER(tree);
     for(i = 0; i < TEST_CAP; i++) {
