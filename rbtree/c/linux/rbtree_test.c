@@ -1,31 +1,29 @@
 #include "rbtree_augmented.h"
 
+#include <stdint.h>     /* uint32_t */
 #include <stdio.h>      /* printf */
 #include <stddef.h>     /* offsetof */
-#include <stdint.h>     /* uintptr_t */
-#include <string.h>     /* malloc */
+#include <string.h>     /* calloc */
 #include <time.h>       /* time */
-#include <inttypes.h>   /* PRIuPTR */
 #include <assert.h>     /* assert */
-#include <errno.h>
-#include <sys/time.h>
-
-///////////////
+#include <errno.h>      /* EAGAIN ENOMEM */
 
 #define printk printf
 #define __init
 #define __exit
-#define KERN_ALERT "Alert"
-#define WARN_ON_ONCE assert
+#define KERN_ALERT "[ALERT]: "
+#define WARN_ON_ONCE(x) assert(!(x))
 
 typedef uint32_t u32;
-typedef uint64_t u64;
-typedef struct timeval cycles_t;
+
 static int nnodes = 100;
 static int perf_loops = 1000;
 static int check_loops = 100;
 
-#define DIFF_US(t1,t2) (((u64)(t1).tv_usec-(u64)(t2).tv_usec)*1000000+((u64)(t1).tv_usec-(u64)t2.tv_usec))
+static inline long long DIFF_NS(struct timespec t1, struct timespec t2)
+{
+	return (t1.tv_sec - t2.tv_sec) * 10e6 + (t1.tv_nsec - t2.tv_nsec);
+}
 
 struct test_node {
 	u32 key;
@@ -252,20 +250,20 @@ static void check_augmented(int nr_nodes)
 static int __init rbtree_test_init(void)
 {
 	int i, j;
-	cycles_t time1, time2;
-	u64 time_delta;
+	struct timespec time1, time2;
+	long long time_delta;
 	struct rb_node *node;
-    srand(time(NULL));
+	srand(time(NULL));
 
-	nodes = malloc(nnodes * sizeof(nodes));
+	nodes = calloc(nnodes, sizeof(nodes));
 	if (!nodes)
 		return -ENOMEM;
 
-	printk(KERN_ALERT "rbtree testing");
+	printk(KERN_ALERT "rbtree testing\n");
 
 	init();
 
-	gettimeofday(&time1, NULL);
+	clock_gettime(CLOCK_MONOTONIC, &time1);
 
 	for (i = 0; i < perf_loops; i++) {
 		for (j = 0; j < nnodes; j++)
@@ -274,14 +272,12 @@ static int __init rbtree_test_init(void)
 			erase(nodes + j, &root);
 	}
 
-	gettimeofday(&time2, NULL);
-	time_delta = DIFF_US(time2, time1);
+	clock_gettime(CLOCK_MONOTONIC, &time2);
+	time_delta = DIFF_NS(time2, time1);
 
-	time_delta = time_delta / perf_loops;
-	printk(" -> test 1 (latency of nnodes insert+delete): %llu us\n",
-	       (unsigned long long)time_delta);
+	printk(" -> test 1 (latency of nnodes insert+delete): %lld ns\n", time_delta);
 
-	gettimeofday(&time1, NULL);
+	clock_gettime(CLOCK_MONOTONIC, &time1);
 
 	for (i = 0; i < perf_loops; i++) {
 		for (j = 0; j < nnodes; j++)
@@ -290,52 +286,46 @@ static int __init rbtree_test_init(void)
 			erase_cached(nodes + j, &root);
 	}
 
-	gettimeofday(&time2, NULL);
-	time_delta = DIFF_US(time2, time1);
+	clock_gettime(CLOCK_MONOTONIC, &time2);
+	time_delta = DIFF_NS(time2, time1);
 
-	time_delta = time_delta / perf_loops;
-	printk(" -> test 2 (latency of nnodes cached insert+delete): %llu us\n",
-	       (unsigned long long)time);
+	printk(" -> test 2 (latency of nnodes cached insert+delete): %lld ns\n", time_delta);
 
 	for (i = 0; i < nnodes; i++)
 		insert(nodes + i, &root);
 
-	gettimeofday(&time1, NULL);
+	clock_gettime(CLOCK_MONOTONIC, &time1);
 
 	for (i = 0; i < perf_loops; i++) {
 		for (node = rb_first(&root.rb_root); node; node = rb_next(node))
 			;
 	}
 
-	gettimeofday(&time2, NULL);
-	time_delta = DIFF_US(time2, time1);
+	clock_gettime(CLOCK_MONOTONIC, &time2);
+	time_delta = DIFF_NS(time2, time1);
 
-	time_delta = time_delta / perf_loops;
-	printk(" -> test 3 (latency of inorder traversal): %llu us\n",
-	       (unsigned long long)time_delta);
+	printk(" -> test 3 (latency of inorder traversal): %lld ns\n", time_delta);
 
-	gettimeofday(&time1, NULL);
+	clock_gettime(CLOCK_MONOTONIC, &time1);
 
 	for (i = 0; i < perf_loops; i++)
 		node = rb_first(&root.rb_root);
 
-	gettimeofday(&time2, NULL);
-	time_delta = DIFF_US(time2, time1);
+	clock_gettime(CLOCK_MONOTONIC, &time2);
+	time_delta = DIFF_NS(time2, time1);
 
-	time_delta = time_delta / perf_loops;
 	printk(" -> test 4 (latency to fetch first node)\n");
-	printk("        non-cached: %llu us\n", (unsigned long long)time);
+	printk("        non-cached: %lld ns\n", time_delta);
 
-	gettimeofday(&time1, NULL);
+	clock_gettime(CLOCK_MONOTONIC, &time1);
 
 	for (i = 0; i < perf_loops; i++)
 		node = rb_first_cached(&root);
 
-	gettimeofday(&time2, NULL);
-	time_delta = DIFF_US(time2, time1);
+	clock_gettime(CLOCK_MONOTONIC, &time2);
+	time_delta = DIFF_NS(time2, time1);
 
-	time_delta = time_delta / perf_loops;
-	printk("        cached: %llu us\n", (unsigned long long)time);
+	printk("        cached: %lld ns\n", time_delta);
 
 	for (i = 0; i < nnodes; i++)
 		erase(nodes + i, &root);
@@ -354,11 +344,11 @@ static int __init rbtree_test_init(void)
 		check(0);
 	}
 
-	printk(KERN_ALERT "augmented rbtree testing");
+	printk(KERN_ALERT "augmented rbtree testing\n");
 
 	init();
 
-	gettimeofday(&time1, NULL);
+	clock_gettime(CLOCK_MONOTONIC, &time1);
 
 	for (i = 0; i < perf_loops; i++) {
 		for (j = 0; j < nnodes; j++)
@@ -367,13 +357,12 @@ static int __init rbtree_test_init(void)
 			erase_augmented(nodes + j, &root);
 	}
 
-	gettimeofday(&time2, NULL);
-	time_delta = DIFF_US(time2, time1);
+	clock_gettime(CLOCK_MONOTONIC, &time2);
+	time_delta = DIFF_NS(time2, time1);
 
-	time_delta = time_delta / perf_loops;
-	printk(" -> test 1 (latency of nnodes insert+delete): %llu us\n", (unsigned long long)time);
+	printk(" -> test 1 (latency of nnodes insert+delete): %lld ns\n", time_delta);
 
-	gettimeofday(&time1, NULL);
+	clock_gettime(CLOCK_MONOTONIC, &time1);
 
 	for (i = 0; i < perf_loops; i++) {
 		for (j = 0; j < nnodes; j++)
@@ -382,11 +371,10 @@ static int __init rbtree_test_init(void)
 			erase_augmented_cached(nodes + j, &root);
 	}
 
-	gettimeofday(&time2, NULL);
-	time_delta = DIFF_US(time2, time1);
+	clock_gettime(CLOCK_MONOTONIC, &time2);
+	time_delta = DIFF_NS(time2, time1);
 
-	time_delta = time_delta / perf_loops;
-	printk(" -> test 2 (latency of nnodes cached insert+delete): %llu us\n", (unsigned long long)time);
+	printk(" -> test 2 (latency of nnodes cached insert+delete): %lld ns\n", time_delta);
 
 	for (i = 0; i < check_loops; i++) {
 		init();
@@ -421,8 +409,8 @@ static void __exit rbtree_test_exit(void)
 
 int main(int argc, const char * argv[])
 {
-    rbtree_test_init();
-    rbtree_test_exit();
+	rbtree_test_init();
+	rbtree_test_exit();
 
-    return 0;
+	return 0;
 }
