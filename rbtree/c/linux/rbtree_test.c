@@ -255,7 +255,7 @@ static int __init rbtree_test_init(void)
 	struct rb_node *node;
 	srand(time(NULL));
 
-	nodes = calloc(nnodes, sizeof(nodes));
+	nodes = calloc(nnodes, sizeof(struct test_node));
 	if (!nodes)
 		return -ENOMEM;
 
