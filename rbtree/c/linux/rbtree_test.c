@@ -263,7 +263,7 @@ static int __init rbtree_test_init(void)
 
 	init();
 
-	clock_gettime(CLOCK_MONOTONIC, &time1);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 
 	for (i = 0; i < perf_loops; i++) {
 		for (j = 0; j < nnodes; j++)
@@ -272,12 +272,12 @@ static int __init rbtree_test_init(void)
 			erase(nodes + j, &root);
 	}
 
-	clock_gettime(CLOCK_MONOTONIC, &time2);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);
 	time_delta = DIFF_NS(time2, time1);
 
 	printk(" -> test 1 (latency of nnodes insert+delete): %lld ns\n", time_delta);
 
-	clock_gettime(CLOCK_MONOTONIC, &time1);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 
 	for (i = 0; i < perf_loops; i++) {
 		for (j = 0; j < nnodes; j++)
@@ -286,7 +286,7 @@ static int __init rbtree_test_init(void)
 			erase_cached(nodes + j, &root);
 	}
 
-	clock_gettime(CLOCK_MONOTONIC, &time2);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);
 	time_delta = DIFF_NS(time2, time1);
 
 	printk(" -> test 2 (latency of nnodes cached insert+delete): %lld ns\n", time_delta);
@@ -294,35 +294,35 @@ static int __init rbtree_test_init(void)
 	for (i = 0; i < nnodes; i++)
 		insert(nodes + i, &root);
 
-	clock_gettime(CLOCK_MONOTONIC, &time1);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 
 	for (i = 0; i < perf_loops; i++) {
 		for (node = rb_first(&root.rb_root); node; node = rb_next(node))
 			;
 	}
 
-	clock_gettime(CLOCK_MONOTONIC, &time2);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);
 	time_delta = DIFF_NS(time2, time1);
 
 	printk(" -> test 3 (latency of inorder traversal): %lld ns\n", time_delta);
 
-	clock_gettime(CLOCK_MONOTONIC, &time1);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 
 	for (i = 0; i < perf_loops; i++)
 		node = rb_first(&root.rb_root);
 
-	clock_gettime(CLOCK_MONOTONIC, &time2);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);
 	time_delta = DIFF_NS(time2, time1);
 
 	printk(" -> test 4 (latency to fetch first node)\n");
 	printk("        non-cached: %lld ns\n", time_delta);
 
-	clock_gettime(CLOCK_MONOTONIC, &time1);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 
 	for (i = 0; i < perf_loops; i++)
 		node = rb_first_cached(&root);
 
-	clock_gettime(CLOCK_MONOTONIC, &time2);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);
 	time_delta = DIFF_NS(time2, time1);
 
 	printk("        cached: %lld ns\n", time_delta);
@@ -348,7 +348,7 @@ static int __init rbtree_test_init(void)
 
 	init();
 
-	clock_gettime(CLOCK_MONOTONIC, &time1);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 
 	for (i = 0; i < perf_loops; i++) {
 		for (j = 0; j < nnodes; j++)
@@ -357,12 +357,12 @@ static int __init rbtree_test_init(void)
 			erase_augmented(nodes + j, &root);
 	}
 
-	clock_gettime(CLOCK_MONOTONIC, &time2);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);
 	time_delta = DIFF_NS(time2, time1);
 
 	printk(" -> test 1 (latency of nnodes insert+delete): %lld ns\n", time_delta);
 
-	clock_gettime(CLOCK_MONOTONIC, &time1);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 
 	for (i = 0; i < perf_loops; i++) {
 		for (j = 0; j < nnodes; j++)
@@ -371,7 +371,7 @@ static int __init rbtree_test_init(void)
 			erase_augmented_cached(nodes + j, &root);
 	}
 
-	clock_gettime(CLOCK_MONOTONIC, &time2);
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);
 	time_delta = DIFF_NS(time2, time1);
 
 	printk(" -> test 2 (latency of nnodes cached insert+delete): %lld ns\n", time_delta);
