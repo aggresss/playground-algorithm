@@ -15,6 +15,8 @@
 #ifndef _TOOLS_LINUX_RBTREE_AUGMENTED_H
 #define _TOOLS_LINUX_RBTREE_AUGMENTED_H
 
+/* rbtree.h */
+
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -388,6 +390,9 @@ rb_next_match(const void *key, struct rb_node *node,
 	for ((node) = rb_find_first((key), (tree), (cmp)); \
 		 (node); (node) = rb_next_match((key), (node), (cmp)))
 
+
+/* rbtree_augmented.h */
+
 /*
  * Please note - only struct rb_augment_callbacks and the prototypes for
  * rb_insert_augmented() and rb_erase_augmented() are intended to be public.
@@ -676,7 +681,7 @@ rb_erase_augmented_cached(struct rb_node *node, struct rb_root_cached *root,
 }
 
 
-
+/* rbtree.c */
 
 /*
  * red-black trees properties:  https://en.wikipedia.org/wiki/Rbtree
