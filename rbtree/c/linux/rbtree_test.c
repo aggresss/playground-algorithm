@@ -2,7 +2,6 @@
 
 #include <stdint.h>     /* uint32_t */
 #include <stdio.h>      /* printf */
-#include <stddef.h>     /* offsetof */
 #include <string.h>     /* calloc */
 #include <time.h>       /* time */
 #include <assert.h>     /* assert */
