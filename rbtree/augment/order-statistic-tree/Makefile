@@ -2,8 +2,10 @@
 CC = gcc
 CXX = g++
 CFLAGS = -g
+CFLAGS += -I ../../c/linux/
 CXXFLAGS = -g -std=c++14
 OBJS = $(patsubst %c, %o, $(wildcard *.c))
+OBJS += $(patsubst %c, %o, ../../c/linux/rbtree.c)
 OBJS += $(patsubst %cpp, %o, $(wildcard *.cpp))
 HEADER = $(wildcard *.h)
 
