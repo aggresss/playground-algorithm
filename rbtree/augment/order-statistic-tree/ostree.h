@@ -10,6 +10,18 @@ struct ostree_node {
 };
 
 static void augment_compute(struct rb_node *rb) {
+    if (!rb) {
+        return;
+    }
+    uint32_t augmented  = 0;
+    struct ostree_node *osnode = rb_entry(rb, struct ostree_node, rb);
+    if (rb->rb_left) {
+        augmented += rb_entry(rb->rb_left, struct ostree_node, rb)->augmented;
+    }
+    if (rb->rb_right) {
+        augmented += rb_entry(rb->rb_right, struct ostree_node, rb)->augmented;
+    }
+    osnode->augmented = augmented;
 }
 
 static void augment_propagate(struct rb_node *rb, struct rb_node *stop) {
