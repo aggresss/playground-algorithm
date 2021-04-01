@@ -65,7 +65,7 @@ void ostree_insert(struct ostree_node *node, struct rb_root_cached *root) {
             new = &parent->rb.rb_right;
     }
 
-    node->augmented = key;
+    node->augmented = 0;
     rb_link_node(&node->rb, rb_parent, new);
     rb_insert_augmented(&node->rb, &root->rb_root, &augment_callbacks);
 }

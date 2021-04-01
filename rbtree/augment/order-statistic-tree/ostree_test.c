@@ -23,7 +23,7 @@ void ostree_test() {
     }
     for (i = 0; i < nnodes; i++) {
 		printf("[TEST ROUND]: %d\n", i);
-        assert(&nodes[i] == ostree_select(&root, i + 1));
+        assert(NULL != ostree_select(&root, i + 1));
         // assert(i + 1 == ostree_rank(&root, &nodes[i]));
     }
 
