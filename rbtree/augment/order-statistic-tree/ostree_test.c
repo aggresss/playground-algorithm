@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 
 #include "ostree.h"
@@ -13,17 +14,17 @@ void ostree_test()
 
 	nodes = calloc(nnodes, sizeof(struct ostree_node));
 	assert(nodes);
+	memset(nodes, 0x00, nnodes * sizeof(struct ostree_node));
     int i;
 	for (i = 0; i < nnodes; i++) {
 		nodes[i].key = i;
-        nodes[i].val = i;
 	}
 	for (i = 0; i < nnodes; i++) {
-		ostree_insert(&nodes[i], &root.rb_root);
+		ostree_insert(&nodes[i], &root);
 	}
 	for (i = 0; i < nnodes; i++) {
-		assert(&nodes[i] == ostree_select(i));
-		assert(i == ostree_rank(&nodes[i]));
+		assert(&nodes[i] == ostree_select(&root, i));
+		assert(i == ostree_rank(&root, &nodes[i]));
 	}
 
 	free(nodes);
