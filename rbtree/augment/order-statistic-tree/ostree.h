@@ -13,7 +13,7 @@ static void augment_compute(struct rb_node *rb) {
     if (!rb) {
         return;
     }
-    uint32_t augmented  = 0;
+    uint32_t augmented = 0;
     struct ostree_node *osnode = rb_entry(rb, struct ostree_node, rb);
     if (rb->rb_left) {
         augmented += rb_entry(rb->rb_left, struct ostree_node, rb)->augmented;
@@ -25,12 +25,24 @@ static void augment_compute(struct rb_node *rb) {
 }
 
 static void augment_propagate(struct rb_node *rb, struct rb_node *stop) {
+    while (rb != stop) {
+        struct ostree_node *node = rb_entry(rb, struct ostree_node, rb);
+        augment_compute(&node->rb);
+        rb = rb_parent(&node->rb);
+    }
 }
 
 static void augment_copy(struct rb_node *rb_old, struct rb_node *rb_new) {
+    struct ostree_node *old = rb_entry(rb_old, struct ostree_node, rb);
+    struct ostree_node *new = rb_entry(rb_new, struct ostree_node, rb);
+    new->augmented = old->augmented;
 }
 
 static void augment_rotate(struct rb_node *rb_old, struct rb_node *rb_new) {
+    struct ostree_node *old = rb_entry(rb_old, struct ostree_node, rb);
+    struct ostree_node *new = rb_entry(rb_new, struct ostree_node, rb);
+    new->augmented = old->augmented;
+    augment_compute(rb_old);
 }
 
 static const struct rb_augment_callbacks augment_callbacks = {
@@ -90,10 +102,10 @@ uint32_t ostree_rank(struct rb_root_cached *root, struct ostree_node *node) {
     uint32_t rank;
     struct rb_node *rbnode = &node->rb;
 
-	rank += 1;
-	if (rb_parent(rbnode)->rb_left) {
-		rank += rb_entry(rbnode->rb_left, struct ostree_node, rb)->augmented;
-	}
+    rank += 1;
+    if (rb_parent(rbnode)->rb_left) {
+        rank += rb_entry(rbnode->rb_left, struct ostree_node, rb)->augmented;
+    }
     while (rbnode) {
         if (rbnode == rb_parent(rbnode)->rb_right) {
             rank += 1;
