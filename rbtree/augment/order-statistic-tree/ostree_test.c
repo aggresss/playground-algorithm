@@ -7,25 +7,56 @@
 
 static int nnodes = 256;
 
+static bool check_argmented(struct rb_node *rb) {
+	if (!rb) {
+		return false;
+	}
+	uint32_t augmented = 0;
+    if (rb->rb_left) {
+        augmented += rb_entry(rb->rb_left, struct ostree_node, rb)->augmented;
+    }
+    if (rb->rb_right) {
+        augmented += rb_entry(rb->rb_right, struct ostree_node, rb)->augmented;
+    }
+
+	return rb_entry(rb, struct ostree_node, rb)->augmented == augmented;
+}
+
 void ostree_test() {
     struct rb_root_cached root = RB_ROOT_CACHED;
+    struct rb_node *rb = NULL;
     struct ostree_node *nodes = NULL;
+    int i;
 
     nodes = calloc(nnodes, sizeof(struct ostree_node));
     assert(nodes);
     memset(nodes, 0x00, nnodes * sizeof(struct ostree_node));
-    int i;
+
     for (i = 0; i < nnodes; i++) {
         nodes[i].key = i;
     }
     for (i = 0; i < nnodes; i++) {
         ostree_insert(&nodes[i], &root);
     }
-    for (i = 0; i < nnodes; i++) {
-		printf("[TEST ROUND]: %d\n", i);
-        assert(NULL != ostree_select(&root, i + 1));
-        // assert(i + 1 == ostree_rank(&root, &nodes[i]));
+    i = 0;
+    for (rb = rb_first(&root.rb_root); rb; rb = rb_next(rb)) {
+        assert(rb_entry(rb, struct ostree_node, rb) == &nodes[i++]);
+        assert(check_argmented(rb));
     }
+
+    struct ostree_node *tmp = ostree_select(&root, 10);
+
+	for (i = 0; i < nnodes; i++) {
+        if(&nodes[i] == tmp) {
+			printf("xxxxx %d\n", i);
+		}
+    }
+
+    // for (i = 0; i < nnodes; i++) {
+    // 	printf("[TEST ROUND]: %d\n", i);
+    //     assert(NULL != ostree_select(&root, i + 1));
+    //     assert(i + 1 == ostree_rank(&root, &nodes[i]));
+    // }
 
     free(nodes);
 }

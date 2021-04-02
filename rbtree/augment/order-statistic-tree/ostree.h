@@ -14,14 +14,13 @@ static void augment_compute(struct rb_node *rb) {
         return;
     }
     uint32_t augmented = 0;
-    struct ostree_node *osnode = rb_entry(rb, struct ostree_node, rb);
     if (rb->rb_left) {
         augmented += rb_entry(rb->rb_left, struct ostree_node, rb)->augmented;
     }
     if (rb->rb_right) {
         augmented += rb_entry(rb->rb_right, struct ostree_node, rb)->augmented;
     }
-    osnode->augmented = augmented;
+    rb_entry(rb, struct ostree_node, rb)->augmented = augmented;
 }
 
 static void augment_propagate(struct rb_node *rb, struct rb_node *stop) {
@@ -39,9 +38,7 @@ static void augment_copy(struct rb_node *rb_old, struct rb_node *rb_new) {
 }
 
 static void augment_rotate(struct rb_node *rb_old, struct rb_node *rb_new) {
-    struct ostree_node *old = rb_entry(rb_old, struct ostree_node, rb);
-    struct ostree_node *new = rb_entry(rb_new, struct ostree_node, rb);
-    new->augmented = old->augmented;
+    augment_compute(rb_new);
     augment_compute(rb_old);
 }
 
@@ -58,7 +55,6 @@ void ostree_insert(struct ostree_node *node, struct rb_root_cached *root) {
     while (*new) {
         rb_parent = *new;
         parent = rb_entry(rb_parent, struct ostree_node, rb);
-        parent->augmented++;
         if (key < parent->key)
             new = &parent->rb.rb_left;
         else
@@ -67,6 +63,7 @@ void ostree_insert(struct ostree_node *node, struct rb_root_cached *root) {
 
     node->augmented = 0;
     rb_link_node(&node->rb, rb_parent, new);
+    augment_propagate(&node->rb, NULL);
     rb_insert_augmented(&node->rb, &root->rb_root, &augment_callbacks);
 }
 
@@ -84,10 +81,10 @@ struct ostree_node *ostree_select(struct rb_root_cached *root, uint32_t rank) {
         if (rbnode->rb_left) {
             node_rank += rb_entry(rbnode->rb_left, struct ostree_node, rb)->augmented;
         }
-        if (node_rank == rank) {
+        if (rank == node_rank) {
             osnode = rb_entry(rbnode, struct ostree_node, rb);
             break;
-        } else if (node_rank > rank) {
+        } else if (rank < node_rank) {
             rbnode = rbnode->rb_left;
         } else {
             rank -= node_rank;
