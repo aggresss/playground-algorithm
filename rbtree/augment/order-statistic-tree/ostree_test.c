@@ -5,13 +5,13 @@
 #include <stdio.h>
 #include <string.h>
 
-static int nnodes = 256;
+static int nnodes = 64;
 
 static bool check_argmented(struct rb_node *rb) {
 	if (!rb) {
 		return false;
 	}
-	uint32_t augmented = 0;
+	uint32_t augmented = 1;
     if (rb->rb_left) {
         augmented += rb_entry(rb->rb_left, struct ostree_node, rb)->augmented;
     }
@@ -43,20 +43,13 @@ void ostree_test() {
         assert(rb_entry(rb, struct ostree_node, rb) == &nodes[i++]);
         assert(check_argmented(rb));
     }
-
-    struct ostree_node *tmp = ostree_select(&root, 10);
-
-	for (i = 0; i < nnodes; i++) {
-        if(&nodes[i] == tmp) {
-			printf("xxxxx %d\n", i);
-		}
+    for (i = 0; i < nnodes; i++) {
+        assert(&nodes[i] == ostree_select(&root, i + 1));
     }
-
-    // for (i = 0; i < nnodes; i++) {
-    // 	printf("[TEST ROUND]: %d\n", i);
-    //     assert(NULL != ostree_select(&root, i + 1));
-    //     assert(i + 1 == ostree_rank(&root, &nodes[i]));
-    // }
+	for (i = 0; i < nnodes; i++) {
+		printf("[TEST ROUND]: %d\n", i);
+        assert(i + 1 == ostree_rank(&root, &nodes[i]));
+    }
 
     free(nodes);
 }
