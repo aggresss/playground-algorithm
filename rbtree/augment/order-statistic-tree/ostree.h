@@ -99,18 +99,17 @@ uint32_t ostree_rank(struct rb_root_cached *root, struct ostree_node *node) {
     uint32_t rank;
     struct rb_node *rbnode = &node->rb;
 
-    rank += 1;
-    if (rb_parent(rbnode)->rb_left) {
+    rank = 1;
+    if (rbnode->rb_left) {
         rank += rb_entry(rbnode->rb_left, struct ostree_node, rb)->augmented;
     }
-    while (rbnode) {
+    while (rbnode != root->rb_root.rb_node) {
         if (rbnode == rb_parent(rbnode)->rb_right) {
             rank += 1;
             if (rb_parent(rbnode)->rb_left) {
                 rank += rb_entry(rb_parent(rbnode)->rb_left, struct ostree_node, rb)->augmented;
             }
         }
-
         rbnode = rb_parent(rbnode);
     }
 

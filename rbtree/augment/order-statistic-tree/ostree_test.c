@@ -33,9 +33,7 @@ void ostree_test() {
     memset(nodes, 0x00, nnodes * sizeof(struct ostree_node));
 
     for (i = 0; i < nnodes; i++) {
-        nodes[i].key = i;
-    }
-    for (i = 0; i < nnodes; i++) {
+		nodes[i].key = i;
         ostree_insert(&nodes[i], &root);
     }
     i = 0;
@@ -45,10 +43,7 @@ void ostree_test() {
     }
     for (i = 0; i < nnodes; i++) {
         assert(&nodes[i] == ostree_select(&root, i + 1));
-    }
-	for (i = 0; i < nnodes; i++) {
-		printf("[TEST ROUND]: %d\n", i);
-        assert(i + 1 == ostree_rank(&root, &nodes[i]));
+		assert(i + 1 == ostree_rank(&root, &nodes[i]));
     }
 
     free(nodes);
