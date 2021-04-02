@@ -13,7 +13,7 @@ static void augment_compute(struct rb_node *rb) {
     if (!rb) {
         return;
     }
-    uint32_t augmented = 0;
+    uint32_t augmented = 1;
     if (rb->rb_left) {
         augmented += rb_entry(rb->rb_left, struct ostree_node, rb)->augmented;
     }
@@ -38,8 +38,8 @@ static void augment_copy(struct rb_node *rb_old, struct rb_node *rb_new) {
 }
 
 static void augment_rotate(struct rb_node *rb_old, struct rb_node *rb_new) {
-    augment_compute(rb_new);
     augment_compute(rb_old);
+    augment_compute(rb_new);
 }
 
 static const struct rb_augment_callbacks augment_callbacks = {
@@ -55,15 +55,15 @@ void ostree_insert(struct ostree_node *node, struct rb_root_cached *root) {
     while (*new) {
         rb_parent = *new;
         parent = rb_entry(rb_parent, struct ostree_node, rb);
+        parent->augmented++;
         if (key < parent->key)
             new = &parent->rb.rb_left;
         else
             new = &parent->rb.rb_right;
     }
 
-    node->augmented = 0;
+    node->augmented = 1;
     rb_link_node(&node->rb, rb_parent, new);
-    augment_propagate(&node->rb, NULL);
     rb_insert_augmented(&node->rb, &root->rb_root, &augment_callbacks);
 }
 
