@@ -1,3 +1,6 @@
+#ifndef _OSTREE_H
+#define _OSTREE_H
+
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -115,3 +118,5 @@ uint32_t ostree_rank(struct rb_root_cached *root, struct ostree_node *node) {
 
     return rank;
 }
+
+#endif /* _OSTREE_H */
